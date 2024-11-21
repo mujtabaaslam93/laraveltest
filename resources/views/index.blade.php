@@ -12,7 +12,7 @@
 
         <!-- Button to open modal -->
         <div class="d-flex justify-content-end mb-3">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">Add Product</button>
+            <button class="btn btn-primary addBtn">Add Product</button>
         </div>
 
         <!-- Table Section -->
@@ -146,6 +146,7 @@
                         </td>
                     `;
                 }
+                updateTotal();
             });
         });
 
@@ -167,11 +168,43 @@
                     document.getElementById('price').value = product.price;
 
                     // Open modal for editing
-                    let myModal = new bootstrap.Modal(document.getElementById('productModal'));
+                    let myModal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                    if(!myModal){
+                        myModal = new bootstrap.Modal(document.getElementById('productModal'));
+                    }
                     myModal.show();
                 });
             });
         });
+        document.querySelectorAll('.addBtn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                let myModal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                if(!myModal){
+                    myModal = new bootstrap.Modal(document.getElementById('productModal'));
+                }
+                clearForm();
+                myModal.show();
+            });
+        });
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('#productTable tr').forEach(row => {
+                let quantity = parseFloat(row.querySelector('td:nth-child(2)').innerText);
+                let price = parseFloat(row.querySelector('td:nth-child(3)').innerText);
+                if (!isNaN(quantity) && !isNaN(price)) {
+                    total += quantity * price;
+                }
+            });
+            // Update the total row at the bottom of the table
+            let totalRow = document.querySelector('tfoot tr');
+            totalRow.querySelector('td:nth-child(2) strong').innerText = total;
+        }
+        function clearForm(){
+            document.getElementById('productId').value = "";
+            document.getElementById('name').value = "";
+            document.getElementById('quantity').value = "";
+            document.getElementById('price').value = "";
+        }
     </script>
 </body>
 </html>
